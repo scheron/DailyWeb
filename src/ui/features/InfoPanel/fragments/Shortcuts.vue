@@ -9,18 +9,6 @@ const {isMacOS} = useDevice()
     <tbody class="text-base-content/80">
       <tr>
         <td class="p-1">
-          <kbd class="bg-base-100 border-base-300 inline-flex h-6 items-center justify-center rounded border px-1.5">0</kbd>
-        </td>
-        <td>Go to Today</td>
-      </tr>
-      <tr>
-        <td class="p-1">
-          <kbd class="bg-base-100 border-base-300 inline-flex h-6 items-center justify-center rounded border px-1.5">1...7</kbd>
-        </td>
-        <td>Go to Day 1...7</td>
-      </tr>
-      <tr>
-        <td class="p-1">
           <kbd class="bg-base-100 border-base-300 inline-flex h-6 items-center justify-center rounded border px-1.5">
             {{ isMacOS ? "⌘" : "Ctrl" }}
           </kbd>
