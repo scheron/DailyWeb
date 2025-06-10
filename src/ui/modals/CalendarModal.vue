@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useUIStore} from "@/stores/ui.store"
 import BaseModal from "@/ui/base/BaseModal.vue"
-import Calendar from "@/ui/features/Calendar"
+// import Calendar from "@/ui/features/Calendar"
 
 const uiStore = useUIStore()
 
@@ -13,6 +13,7 @@ function onClose() {
 
 <template>
   <BaseModal :open="uiStore.isCalendarOpen" @close="onClose">
-    <Calendar />
+    jasd
+    <!-- <Calendar /> -->
   </BaseModal>
 </template>

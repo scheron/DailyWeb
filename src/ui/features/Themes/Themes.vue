@@ -3,7 +3,7 @@ import {computed} from "vue"
 
 import {useThemeStore} from "@/stores/theme.store"
 import BaseIcon from "@/ui/base/BaseIcon"
-import ThemesPreview from "./ThemesPreview.vue"
+import Preview from "./fragments/Preview.vue"
 
 const themeStore = useThemeStore()
 
@@ -22,7 +22,7 @@ function setTheme(themeId: string) {
       Light
     </div>
     <div class="flex gap-3 overflow-x-auto overscroll-none py-3">
-      <ThemesPreview
+      <Preview
         v-for="theme in lightThemes"
         :key="theme.id"
         :theme="theme"
@@ -37,7 +37,7 @@ function setTheme(themeId: string) {
     </div>
 
     <div class="flex gap-3 overflow-x-auto overscroll-none py-3">
-      <ThemesPreview
+      <Preview
         v-for="theme in darkThemes"
         :key="theme.id"
         :theme="theme"

@@ -1,11 +1,12 @@
-import {computed, ref} from "vue"
-import {API} from "@/api"
-import {objectFilter} from "@/utils/objects"
-import {DateTime} from "luxon"
-import {defineStore} from "pinia"
+import { DateTime } from "luxon"
+import { defineStore } from "pinia"
+import { computed, ref } from "vue"
 
-import type {ISODate} from "@/types/date"
-import type {Day, Task} from "@/types/tasks"
+import { API } from "@/api"
+import { objectFilter } from "@/utils/objects"
+
+import type { ISODate } from "@/types/date"
+import type { Day, Task } from "@/types/tasks"
 
 export const useTasksStore = defineStore("tasks", () => {
   const isDaysLoaded = ref(false)
@@ -52,7 +53,7 @@ export const useTasksStore = defineStore("tasks", () => {
     return true
   }
 
-  async function updateTask(taskId: string, updates: {content?: string; done?: boolean}) {
+  async function updateTask(taskId: string, updates: Partial<Omit<Task, "id" | "createdAt" | "updatedAt">>) {
     const payload = objectFilter(updates, (value) => value !== undefined)
     const updatedDay = await API.updateTask(taskId, payload)
     if (!updatedDay) return false
@@ -75,8 +76,8 @@ export const useTasksStore = defineStore("tasks", () => {
 
     const updatedDay = days.value[dayIndex]
     updatedDay.tasks = updatedDay.tasks.filter((t) => t.id !== taskId)
-    updatedDay.countActive = updatedDay.tasks.filter((t) => !t.done).length
-    updatedDay.countDone = updatedDay.tasks.length - updatedDay.countActive
+    updatedDay.countActive = updatedDay.tasks.filter((t) => t.status === "active").length
+    updatedDay.countDone = updatedDay.tasks.filter((t) => t.status === "done").length
 
     updateDayInStore(updatedDay)
 

@@ -1,9 +1,16 @@
 import type {ISODate, ISODateTime, ISOTime, Timezone} from "./date"
 
+export type TaskStatus = "active" | "canceled" | "done"
+export type Label = {
+  name: string
+  color: string
+}
+
 export type Task = {
   id: string
   content: string
-  done: boolean
+  status: TaskStatus
+  labels: Label['name'][]
 
   scheduled: {
     date: ISODate
@@ -22,6 +29,7 @@ export type Day = {
   date: ISODate
   subtitle?: string
   tasks: Task[]
+  labels: Label[]
   countActive: number
   countDone: number
 }

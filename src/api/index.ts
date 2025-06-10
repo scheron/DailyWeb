@@ -1,13 +1,12 @@
-import {groupTasksByDay} from "@/utils/tasks"
-
 import {DateTime} from "luxon"
 import {nanoid} from "nanoid"
 
 import {LocalDB} from "@/utils/LocalDB"
+import {groupTasksByDay} from "@/utils/tasks"
 
 import type {ISODate} from "@/types/date"
 import type {Storage} from "@/types/storage"
-import type {Day, DayItem, Task} from "@/types/tasks"
+import type {Day, DayItem, Label, Task} from "@/types/tasks"
 
 function defineApi(): Storage {
   const db = new LocalDB("daily_tasks", [
@@ -27,6 +26,11 @@ function defineApi(): Storage {
         {name: "date", keyPath: "date", options: {unique: false}},
       ],
     },
+    {
+      name: "labels",
+      keyPath: "name",
+      indexes: [{name: "name", keyPath: "name", options: {unique: true}}],
+    },
   ])
 
   /**
@@ -41,12 +45,13 @@ function defineApi(): Storage {
     const fromDate = from ? from : DateTime.now().minus({years: 1}).toISODate()!
     const toDate = to ? to : DateTime.now().plus({years: 1}).toISODate()!
 
-    return await db.transaction("readonly", ["tasks", "days"], async ([tasksStore, daysStore], done) => {
-      const tasks = await tasksStore.index("scheduled.date").getAll(IDBKeyRange.bound(fromDate, toDate))
-      const days = await daysStore.index("date").getAll(IDBKeyRange.bound(fromDate, toDate))
+    return await db.transaction("readonly", ["tasks", "days", "labels"], async ([tasksStore, daysStore, labelsStore], done) => {
+      const tasks = (await tasksStore.index("scheduled.date").getAll(IDBKeyRange.bound(fromDate, toDate))) ?? []
+      const days = (await daysStore.index("date").getAll(IDBKeyRange.bound(fromDate, toDate))) ?? []
+      const labels = (await labelsStore.getAll()) ?? []
 
       done()
-      return groupTasksByDay(tasks ?? [], days ?? []) || null
+      return groupTasksByDay({tasks, days, labels}) || null
     })
   }
 
@@ -56,7 +61,7 @@ function defineApi(): Storage {
    * @returns The day that matches the query
    */
   async function getDay(date: ISODate): Promise<Day | null> {
-    return await db.transaction("readonly", ["days", "tasks"], async ([daysStore, tasksStore], done) => {
+    return await db.transaction("readonly", ["days", "tasks", "labels"], async ([daysStore, tasksStore, labelsStore], done) => {
       const dayId = date.replaceAll("-", "")
       const dayItem = await daysStore.get(dayId)
 
@@ -68,10 +73,11 @@ function defineApi(): Storage {
       const fromDate = DateTime.fromISO(date).toISODate()!
       const toDate = DateTime.fromISO(date).toISODate()!
 
-      const tasks = await tasksStore.index("scheduled.date").getAll(IDBKeyRange.bound(fromDate, toDate))
+      const tasks = (await tasksStore.index("scheduled.date").getAll(IDBKeyRange.bound(fromDate, toDate))) ?? []
+      const labels = (await labelsStore.getAll()) ?? []
 
       done()
-      return groupTasksByDay(tasks ?? [], [dayItem])[0] || null
+      return groupTasksByDay({tasks, days: [dayItem], labels})[0] || null
     })
   }
 
@@ -93,7 +99,8 @@ function defineApi(): Storage {
     const newTask: Task = {
       id: nanoid(),
       content,
-      done: false,
+      status: "active",
+      labels: [],
       createdAt: now.toISO()!,
       updatedAt: now.toISO()!,
       scheduled: {
@@ -131,7 +138,7 @@ function defineApi(): Storage {
    * @param updates - The updates to apply to the task
    * @returns The day that matches the query
    */
-  async function updateTask(id: Task["id"], updates: Partial<Omit<Task, "id" | "createdAt">>): Promise<Day | null> {
+  async function updateTask(id: Task["id"], updates: Partial<Omit<Task, "id" | "createdAt" | "updatedAt">>): Promise<Day | null> {
     const taskDate = await db.transaction("readwrite", ["tasks", "days"], async ([tasksStore, daysStore], done) => {
       const task = await tasksStore.get(id)
 
@@ -215,13 +222,58 @@ function defineApi(): Storage {
 
     return await getDay(date)
   }
+
+  async function getLabels(): Promise<Label[]> {
+    return await db.transaction("readonly", ["labels"], async ([labelsStore], done) => {
+      const labels = await labelsStore.getAll()
+      done()
+      return labels
+    })
+  }
+
+  async function createLabel({name, color}: {name: string; color: string}): Promise<Label | null> {
+    return await db.transaction("readwrite", ["labels"], async ([labelsStore], done) => {
+      const newLabel: Label = {
+        name,
+        color,
+      }
+
+      const existingLabel = await labelsStore.get(name)
+      console.log({existingLabel})
+
+      if (existingLabel) {
+        done()
+        return null
+      }
+
+      await labelsStore.put(newLabel)
+      done()
+
+      return newLabel
+    })
+  }
+
+  async function deleteLabel(name: Label["name"]): Promise<boolean> {
+    await db.transaction("readwrite", ["labels"], async ([labelsStore], done) => {
+      await labelsStore.delete(name)
+      done()
+    })
+
+    return true
+  }
+
   return {
     createTask,
     updateTask,
     deleteTask,
+
     getDays,
     getDay,
     updateDay,
+
+    getLabels,
+    createLabel,
+    deleteLabel,
   }
 }
 

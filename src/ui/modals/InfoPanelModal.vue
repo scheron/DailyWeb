@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useUIStore} from "@/stores/ui.store"
 import BaseModal from "@/ui/base/BaseModal.vue"
-import InfoPanel from "@/ui/features/InfoPanel"
+// import InfoPanel from "@/ui/features/InfoPanel"
 
 const uiStore = useUIStore()
 
@@ -13,6 +13,6 @@ function onClose() {
 
 <template>
   <BaseModal :open="uiStore.isInfoPanelOpen" @close="onClose">
-    <InfoPanel mobile />
+    <!-- <InfoPanel mobile /> -->
   </BaseModal>
 </template>

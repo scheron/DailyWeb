@@ -351,11 +351,20 @@
 .markdown dt,
 .markdown dd {
   margin-top: 0;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.25em;
   white-space: normal;
   word-wrap: normal;
   word-break: keep-all;
   overflow-wrap: break-word;
+}
+
+.markdown li,
+.markdown td,
+.markdown th,
+.markdown blockquote,
+.markdown dt,
+.markdown dd {
+  line-height: 1.1;
 }
 
 .markdown blockquote {

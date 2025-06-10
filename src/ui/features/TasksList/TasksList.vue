@@ -2,6 +2,7 @@
 import {computed} from "vue"
 
 import {useFilterStore} from "@/stores/filter.store"
+import {useLabelsStore} from "@/stores/labels.store"
 import {useTaskEditorStore} from "@/stores/taskEditor.store"
 import {useTasksStore} from "@/stores/tasks.store"
 import BaseAnimation from "@/ui/base/BaseAnimation.vue"
@@ -9,9 +10,10 @@ import BaseSpinner from "@/ui/base/BaseSpinner.vue"
 import EmptyState from "./fragments/EmptyState.vue"
 import TaskItem from "./fragments/TaskItem.vue"
 
-import type {Task} from "@/types/tasks"
+import type {Label, Task, TaskStatus} from "@/types/tasks"
 
 const tasksStore = useTasksStore()
+const labelsStore = useLabelsStore()
 const taskEditorStore = useTaskEditorStore()
 const filterStore = useFilterStore()
 
@@ -20,10 +22,15 @@ const filteredTasks = computed(() => {
 
   return tasksStore.dailyTasks.filter((task) => {
     if (filter === "all") return true
-    if (filter === "active") return !task.done
-    if (filter === "done") return task.done
+    if (filter === "active") return task.status === "active"
+    if (filter === "done") return task.status === "done"
+    if (filter === "canceled") return task.status === "canceled"
   })
 })
+
+function getTaskLabels(task: Task): Label[] {
+  return task.labels.map((labelId) => labelsStore.labelsMap.get(labelId)).filter(Boolean) as Label[]
+}
 
 function onEdit(task?: Task) {
   taskEditorStore.setCurrentEditingTask(task ?? null)
@@ -35,8 +42,8 @@ function onDelete(task: Task) {
   taskEditorStore.setIsTaskDeleteConfirmOpen(true)
 }
 
-function onToggleDone(task: Task, done: boolean) {
-  tasksStore.updateTask(task.id, {done})
+function onChangeStatus(task: Task, status: TaskStatus) {
+  tasksStore.updateTask(task.id, {status})
 }
 </script>
 
@@ -46,13 +53,14 @@ function onToggleDone(task: Task, done: boolean) {
       <BaseSpinner v-if="!tasksStore.isDaysLoaded" />
       <EmptyState v-else-if="!filteredTasks.length" :date="tasksStore.activeDay" :filter="filterStore.activeFilter" @create-task="onEdit" />
 
-      <div v-else :key="String(tasksStore.activeDay + filterStore.activeFilter)" class="flex flex-1 flex-col gap-2 p-1">
+      <div v-else :key="String(tasksStore.activeDay + filterStore.activeFilter)" class="flex flex-1 flex-col gap-2 p-2">
         <BaseAnimation name="fade" group mode="out-in">
           <TaskItem
             v-for="task in filteredTasks"
             :key="task.id"
             :task="task"
-            @toggle-done="onToggleDone(task, $event)"
+            :labels="getTaskLabels(task)"
+            @change-status="onChangeStatus(task, $event)"
             @delete="onDelete(task)"
             @edit="onEdit(task)"
           />

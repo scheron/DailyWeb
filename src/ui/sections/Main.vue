@@ -39,7 +39,7 @@ const emit = defineEmits<{
         <Toolbar />
       </div>
 
-      <div class="bg-base-200 flex-1 overflow-y-auto p-2">
+      <div class="bg-base-200 flex-1 overflow-y-auto">
         <BaseAnimation name="fade" mode="out-in">
           <TaskEditor v-if="taskEditorOpen" />
           <TasksList v-else />

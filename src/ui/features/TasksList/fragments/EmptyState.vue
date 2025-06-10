@@ -11,9 +11,10 @@ const props = defineProps<{date?: string; filter: TasksFilter}>()
 const emit = defineEmits<{"create-task": []}>()
 
 const title = computed(() => {
-  if (props.filter === "all") return "any"
   if (props.filter === "active") return "active"
   if (props.filter === "done") return "completed"
+  if (props.filter === "canceled") return "canceled"
+  return "any"
 })
 
 function onCreateTask() {
