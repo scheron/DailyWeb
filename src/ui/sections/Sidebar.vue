@@ -8,18 +8,19 @@ import BasePanel from "@/ui/base/BasePanel"
 import BaseSpinner from "@/ui/base/BaseSpinner.vue"
 import CalendarMonth from "@/ui/features/CalendarMonth"
 import HelpPanel from "@/ui/features/HelpPanel"
+import LabelsPanel from "@/ui/features/LabelsPanel"
 import RecentActiveTasks from "@/ui/features/RecentActiveTasks"
 import Themes from "@/ui/features/Themes"
 import Logo from "@/ui/misc/Logo.vue"
 
 defineProps<{
- dataLoaded: boolean
+  dataLoaded: boolean
   contentHeight: number
 }>()
 
 const uiStore = useUIStore()
 const tasksStore = useTasksStore()
-const {isDesktop, } = useDevice()
+const {isDesktop} = useDevice()
 </script>
 
 <template>
@@ -47,16 +48,19 @@ const {isDesktop, } = useDevice()
       <template v-else>
         <div class="text-base-content flex size-full flex-col pb-2">
           <div class="flex-1 overflow-y-auto hide-scrollbar">
-            <BasePanel opened icon="calendar" group="sidebar" label="Calendar" class="border-base-300 border-b" content-class="p-0 bg-base-100">
+            <BasePanel opened icon="calendar" group="calendar" label="Calendar" class="border-base-300 border-b" content-class="p-0 bg-base-100">
               <CalendarMonth class="px-2 py-1" />
             </BasePanel>
-            <BasePanel icon="history" group="sidebar" label="Active Tasks" class="border-base-300 border-b" content-class="p-0 bg-base-100">
+            <BasePanel icon="history" group="calendar" label="Active Tasks" class="border-base-300 border-b" content-class="p-0 bg-base-100">
               <RecentActiveTasks class="px-2" />
             </BasePanel>
-            <BasePanel label="Themes" icon="background" group="sidebar" class="border-base-300 border-b">
+            <BasePanel icon="tags" group="ui" label="Labels" class="border-base-300 border-b" content-class="p-0 bg-base-100">
+              <LabelsPanel class="px-2" />
+            </BasePanel>
+            <BasePanel label="Themes" icon="background" group="ui" class="border-base-300 border-b">
               <Themes />
             </BasePanel>
-            <BasePanel label="Daily" icon="logo" group="sidebar" content-class="py-0">
+            <BasePanel label="Daily" icon="logo" group="ui" content-class="py-0">
               <HelpPanel />
             </BasePanel>
           </div>

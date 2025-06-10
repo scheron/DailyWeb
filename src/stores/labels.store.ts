@@ -40,6 +40,21 @@ export const useLabelsStore = defineStore("labels", () => {
     return true
   }
 
+  function defineInitialLabels() {
+    const initialLabels = [
+      {name: "🔥 Work", color: "#D01C55"},
+      {name: "🎨 Design", color: "#015A6F"},
+      {name: "🐶 Pet", color: "#35A4D9"},
+    ]
+
+    for (const label of initialLabels) {
+      const existingLabel = labels.value.find((l) => l.name === label.name)
+      if (!existingLabel) createLabel(label.name, label.color)
+    }
+  }
+
+  defineInitialLabels()
+
   return {
     isLabelsLoaded,
     labels,

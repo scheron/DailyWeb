@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import {computed} from "vue"
-import {toast} from "vue-sonner"
+import { computed } from "vue"
+import { toast } from "vue-sonner"
 
-import {useFilterStore} from "@/stores/filter.store"
-import {useLabelsStore} from "@/stores/labels.store"
-import {useTaskEditorStore} from "@/stores/taskEditor.store"
-import {useTasksStore} from "@/stores/tasks.store"
+import { useFilterStore } from "@/stores/filter.store"
+import { useTaskEditorStore } from "@/stores/taskEditor.store"
+import { useTasksStore } from "@/stores/tasks.store"
 import PanelDeleteConfirm from "./fragments/panels/PanelDeleteConfirm.vue"
 import PanelEdit from "./fragments/panels/PanelEdit.vue"
 import PanelFilters from "./fragments/panels/PanelFilters.vue"
-import {useRestoreTaskToast} from "./model/useRestoreTaskToast"
+import { useRestoreTaskToast } from "./model/useRestoreTaskToast"
 
 const tasksStore = useTasksStore()
-const labelsStore = useLabelsStore()
 const taskEditorStore = useTaskEditorStore()
 const filterStore = useFilterStore()
 
@@ -76,10 +74,10 @@ function onClose() {
   <PanelFilters
     v-else
     :active-filter="filterStore.activeFilter"
-    :active-label="filterStore.activeLabel"
+    :active-labels="filterStore.activeLabels"
     :tasks="tasksStore.dailyTasks"
-    :labels="labelsStore.labels"
+    :labels="tasksStore.dailyLabels"
     @update:active-filter="filterStore.setActiveFilter"
-    @update:active-label="filterStore.setActiveLabel"
+    @update:active-labels="filterStore.setActiveLabels"
   />
 </template>

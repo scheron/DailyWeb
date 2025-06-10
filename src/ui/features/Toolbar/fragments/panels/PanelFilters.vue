@@ -2,18 +2,19 @@
 import {computed} from "vue"
 
 import {capitalize} from "@/utils/strings"
+import BaseIcon from "@/ui/base/BaseIcon"
 
 import type {TasksFilter} from "@/types/filters"
 import type {Label, Task} from "@/types/tasks"
 
 const props = defineProps<{
   activeFilter: TasksFilter
-  activeLabel?: Label | null
+  activeLabels: Label["name"][]
   tasks: Task[]
   labels: Label[]
 }>()
 
-const emit = defineEmits<{"update:active-filter": [TasksFilter]; "update:active-label": [Label]}>()
+const emit = defineEmits<{"update:active-filter": [TasksFilter]; "update:active-labels": [Label["name"]]}>()
 
 const options: {label: string; value: TasksFilter}[] = [
   {label: "All", value: "all"},
@@ -38,18 +39,24 @@ const count = computed(() => {
 <template>
   <div class="bg-base-100 flex size-full flex-col gap-2 px-4 py-2 md:flex-row md:items-center md:justify-between">
     <div class="flex items-center gap-2">
-      <button
-        v-for="label in labels"
-        :key="label.name"
-        class="focus-visible-ring border opacity-80 hover:opacity-100 rounded-full focus-visible:ring-offset-base-100 relative focus-visible:ring-base-content px-2 py-0.5 transition-colors outline-none"
-        :style="{
-          borderColor: activeLabel?.name === label.name ? label.color : 'transparent',
-        }"
-        @click="emit('update:active-label', label)"
-      >
-        <span class="absolute inset-0 rounded-full opacity-20 size-full" :style="{backgroundColor: label.color}" />
-        <span class="text-xs relative">{{ label.name }}</span>
-      </button>
+      <span v-if="!activeLabels.length" class="text-sm text-base-content/70">
+        <BaseIcon name="tags" class="size-4" />
+        No daily labels
+      </span>
+      <template v-else>
+        <button
+          v-for="label in labels"
+          :key="label.name"
+          class="focus-visible-ring border opacity-80 hover:opacity-100 rounded-full focus-visible:ring-offset-base-100 relative focus-visible:ring-base-content px-2 py-0.5 transition-colors outline-none"
+          :style="{
+            borderColor: activeLabels.includes(label.name) ? label.color : 'transparent',
+          }"
+          @click="emit('update:active-labels', label.name)"
+        >
+          <span class="absolute inset-0 rounded-full opacity-20 size-full" :style="{backgroundColor: label.color}" />
+          <span class="text-xs relative">{{ label.name }}</span>
+        </button>
+      </template>
     </div>
 
     <div class="flex w-full items-center gap-2 md:w-auto">
