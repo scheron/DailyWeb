@@ -10,11 +10,11 @@ import {useSwipeState} from "../model/useSwipeState"
 import {useTapGestures} from "../model/useTapGestures"
 import TaskItemAction from "./TaskItemAction.vue"
 
-import type {Label, Task, TaskStatus} from "@/types/tasks"
+import type {Tag, Task, TaskStatus} from "@/types/tasks"
 
 const emit = defineEmits<{"change-status": [status: TaskStatus]; edit: []}>()
-const props = withDefaults(defineProps<{task: Task; labels?: Label[]}>(), {
-  labels: () => [],
+const props = withDefaults(defineProps<{task: Task; tags?: Tag[]}>(), {
+  tags: () => [],
 })
 
 const containerRef = useTemplateRef<HTMLDivElement>("container")
@@ -28,7 +28,7 @@ const {isActive, leftOpacity, rightOpacity, shouldLeftActionTrigger, shouldRight
   actionThreshold: computed(() => (isMobile.value ? 55 : 70)),
   onTrigger: (dir) => {
     if (dir === "right") emit("change-status", props.task.status === "done" ? "active" : "done")
-    if (dir === "left") emit("change-status", props.task.status === "canceled" ? "active" : "canceled")
+    if (dir === "left") emit("change-status", props.task.status === "discarded" ? "active" : "discarded")
   },
 })
 
@@ -86,11 +86,11 @@ useEventListener("mouseup", swipeGestures.onMouseUp, {passive: false})
 
       <TaskItemAction
         :opacity="rightOpacity"
-        :class="task.status === 'canceled' ? 'bg-base-300' : 'bg-warning/60'"
+        :class="task.status === 'discarded' ? 'bg-base-300' : 'bg-warning/60'"
         :should-action-trigger="shouldRightActionTrigger"
         class="justify-end"
       >
-        <BaseIcon v-if="task.status !== 'canceled'" name="archive" class="text-base-content size-5 sm:size-6" />
+        <BaseIcon v-if="task.status !== 'discarded'" name="archive" class="text-base-content size-5 sm:size-6" />
         <BaseIcon v-else name="undo" class="text-base-content size-5 sm:size-6" />
       </TaskItemAction>
 
@@ -101,27 +101,27 @@ useEventListener("mouseup", swipeGestures.onMouseUp, {passive: false})
 
       <div
         class="bg-warning absolute top-0 left-0 z-30 w-2 rounded-l-sm transition-all duration-500"
-        :class="[task.status === 'canceled' ? 'h-full opacity-100' : 'h-0 opacity-0']"
+        :class="[task.status === 'discarded' ? 'h-full opacity-100' : 'h-0 opacity-0']"
       />
 
       <div :style="swipeStyle" class="group bg-base-100 pr-4 py-2 pl-6 relative flex flex-col h-full">
-        <div v-if="labels.length" class="flex mb-2 gap-1 items-center">
+        <div v-if="tags.length" class="flex mb-2 gap-1 items-center">
           <div
-            v-for="label in labels.slice(0, 5)"
-            :key="label.name"
+            v-for="tag in tags.slice(0, 5)"
+            :key="tag.id"
             class="text-xs font-semibold rounded-xl px-2 py-0.5 flex items-center gap-1 relative overflow-hidden"
           >
-            <div class="size-full opacity-20 absolute inset-0" :style="{backgroundColor: label.color}" />
-            <span class="relative" :style="{color: label.color}">{{ label.name }}</span>
+            <div class="size-full opacity-20 absolute inset-0" :style="{backgroundColor: tag.color}" />
+            <span class="relative" :style="{color: tag.color}">{{ tag.name }}</span>
           </div>
-          <div v-if="labels.length > 5" class="text-xs text-info font-semibold bg-info/20 rounded-xl px-2 py-0.5">+{{ labels.length - 5 }}</div>
+          <div v-if="tags.length > 5" class="text-xs text-info font-semibold bg-info/20 rounded-xl px-2 py-0.5">+{{ tags.length - 5 }}</div>
         </div>
 
         <div class="flex-1">
           <div
             ref="content"
             class="markdown max-w-full flex-1 cursor-default overflow-x-auto rounded-md p-1 break-words break-all transition-opacity duration-200 outline-none"
-            :class="{'line-through opacity-50': ['done', 'canceled'].includes(task.status)}"
+            :class="{'line-through opacity-50': ['done', 'discarded'].includes(task.status)}"
           />
         </div>
       </div>

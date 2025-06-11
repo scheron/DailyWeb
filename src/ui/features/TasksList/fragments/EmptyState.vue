@@ -13,7 +13,7 @@ const emit = defineEmits<{"create-task": []}>()
 const title = computed(() => {
   if (props.filter === "active") return "active"
   if (props.filter === "done") return "completed"
-  if (props.filter === "canceled") return "canceled"
+  if (props.filter === "discarded") return "discarded"
   return "any"
 })
 

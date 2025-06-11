@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import { toast } from "vue-sonner"
+import {computed} from "vue"
+import {toast} from "vue-sonner"
 
-import { useFilterStore } from "@/stores/filter.store"
-import { useTaskEditorStore } from "@/stores/taskEditor.store"
-import { useTasksStore } from "@/stores/tasks.store"
+import {useFilterStore} from "@/stores/filter.store"
+import {useTaskEditorStore} from "@/stores/taskEditor.store"
+import {useTasksStore} from "@/stores/tasks.store"
 import PanelDeleteConfirm from "./fragments/panels/PanelDeleteConfirm.vue"
 import PanelEdit from "./fragments/panels/PanelEdit.vue"
 import PanelFilters from "./fragments/panels/PanelFilters.vue"
-import { useRestoreTaskToast } from "./model/useRestoreTaskToast"
+import {useRestoreTaskToast} from "./model/useRestoreTaskToast"
 
 const tasksStore = useTasksStore()
 const taskEditorStore = useTaskEditorStore()
@@ -21,6 +21,7 @@ const activeState = computed(() => {
   if (taskEditorStore.isTaskDeleteConfirmOpen) return "delete"
   return "filter"
 })
+
 
 async function onCreate(content: string) {
   const isSuccess = await tasksStore.createTask(content)
@@ -74,10 +75,10 @@ function onClose() {
   <PanelFilters
     v-else
     :active-filter="filterStore.activeFilter"
-    :active-labels="filterStore.activeLabels"
+    :active-tags="Array.from(filterStore.activeTagIds)"
     :tasks="tasksStore.dailyTasks"
-    :labels="tasksStore.dailyLabels"
+    :tags="tasksStore.dailyTags"
     @update:active-filter="filterStore.setActiveFilter"
-    @update:active-labels="filterStore.setActiveLabels"
+    @update:active-tags="filterStore.setActiveTags"
   />
 </template>

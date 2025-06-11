@@ -6,7 +6,7 @@ import {invoke} from "@vueuse/core"
 import {useContentSize} from "@/composables/useContentSize"
 import {useDevice} from "@/composables/useDevice"
 import {useShortcut} from "@/composables/useShortcut"
-import {useLabelsStore} from "@/stores/labels.store"
+import {useTagsStore} from "@/stores/tags.store"
 import {useTaskEditorStore} from "@/stores/taskEditor.store"
 import {useTasksStore} from "@/stores/tasks.store"
 import {useThemeStore} from "@/stores/theme.store"
@@ -20,7 +20,7 @@ import Sidebar from "@/ui/sections/Sidebar.vue"
 import SidebarMini from "@/ui/sections/SidebarMini.vue"
 
 const tasksStore = useTasksStore()
-const labelsStore = useLabelsStore()
+const tagsStore = useTagsStore()
 const taskEditorStore = useTaskEditorStore()
 const uiStore = useUIStore()
 useThemeStore()
@@ -28,7 +28,7 @@ useThemeStore()
 const {isDesktop, isMacOS} = useDevice()
 const {contentHeight, contentWidth} = useContentSize("container")
 
-const isDataLoaded = computed(() => tasksStore.isDaysLoaded && labelsStore.isLabelsLoaded)
+const isDataLoaded = computed(() => tasksStore.isDaysLoaded && tagsStore.isTagsLoaded)
 
 function onCreateTask() {
   taskEditorStore.setCurrentEditingTask(null)
@@ -40,7 +40,7 @@ useShortcut([isMacOS ? "cmd" : "ctrl", "i"], () => uiStore.toggleIsInfoPanelOpen
 useShortcut([isMacOS ? "cmd" : "ctrl", "e"], () => uiStore.toggleIsExportTaskOpen())
 
 invoke(async () => {
-  await Promise.all([tasksStore.loadTasks(), labelsStore.loadLabels()])
+  await Promise.all([tasksStore.loadTasks(), tagsStore.loadTags()])
   console.log(tasksStore.days)
 })
 </script>

@@ -1,24 +1,24 @@
 import {DateTime} from "luxon"
 
 import type {ISODate} from "@/types/date"
-import type {Day, DayItem, Label, Task} from "@/types/tasks"
+import type {Day, DayItem, Tag, Task} from "@/types/tasks"
 
 type GroupTasksByDayParams = {
   tasks: Task[]
   days: DayItem[]
-  labels: Label[]
+  tags: Tag[]
 }
 
 export function groupTasksByDay(params: GroupTasksByDayParams): Day[] {
-  const {tasks, days, labels} = params
+  const {tasks, days, tags} = params
 
   const tasksByDay = new Map<string, Task[]>()
-  const labelsByDay = new Map<string, Label[]>()
+  const tagsByDay = new Map<string, Tag[]>()
 
-  const labelsMap = new Map<Label["name"], Label>()
+  const tagsMap = new Map<Tag["id"], Tag>()
 
-  for (const label of labels) {
-    labelsMap.set(label.name, label)
+  for (const tag of tags) {
+    tagsMap.set(tag.id, tag)
   }
 
   for (const task of tasks) {
@@ -28,13 +28,17 @@ export function groupTasksByDay(params: GroupTasksByDayParams): Day[] {
     dayTasks.push(task)
     tasksByDay.set(taskDate, dayTasks)
 
-    const taskLabels = task.labels.map((labelId) => labelsMap.get(labelId)).filter(Boolean)
-    labelsByDay.set(taskDate, (taskLabels ?? []) as Label[])
+    const taskTags = task.tags.map(({id}) => tagsMap.get(id)).filter(Boolean) as Tag[]
+
+    if (!tagsByDay.has(taskDate)) tagsByDay.set(taskDate, [])
+
+    const newTags = tagsByDay.get(taskDate)!.concat(taskTags).filter(Boolean) as Tag[]
+    tagsByDay.set(taskDate, newTags)
   }
 
   return days.map((day) => {
     const tasks = tasksByDay.get(day.date) || []
-    const labels = labelsByDay.get(day.date) || []
+    const tags = tagsByDay.get(day.date) || []
     const sortedTasks = sortScheduledTasks(tasks, "desc")
     const countActive = sortedTasks.filter((task) => task.status === "active").length
     const countDone = sortedTasks.filter((task) => task.status === "done").length
@@ -46,7 +50,7 @@ export function groupTasksByDay(params: GroupTasksByDayParams): Day[] {
       countActive,
       countDone,
       tasks: sortedTasks,
-      labels,
+      tags,
     }
   })
 }

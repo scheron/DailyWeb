@@ -7,7 +7,9 @@ export type CalendarDay = {
   isCurrentMonth: boolean
   isoDate: ISODate
   dayInfo: {
+    countActiveTasks: number
     countCompletedTasks: number
+    countDiscardedTasks: number
     countTotalTasks: number
   }
 }

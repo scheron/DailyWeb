@@ -1,12 +1,13 @@
 import {DateTime} from "luxon"
 import {nanoid} from "nanoid"
 
+import {arrayRemoveDuplicates} from "@/utils/arrays"
 import {LocalDB} from "@/utils/LocalDB"
 import {groupTasksByDay} from "@/utils/tasks"
 
 import type {ISODate} from "@/types/date"
 import type {Storage} from "@/types/storage"
-import type {Day, DayItem, Label, Task} from "@/types/tasks"
+import type {Day, DayItem, Tag, Task} from "@/types/tasks"
 
 function defineApi(): Storage {
   const db = new LocalDB("daily_tasks", [
@@ -27,9 +28,12 @@ function defineApi(): Storage {
       ],
     },
     {
-      name: "labels",
-      keyPath: "name",
-      indexes: [{name: "name", keyPath: "name", options: {unique: true}}],
+      name: "tags",
+      keyPath: "id",
+      indexes: [
+        {name: "id", keyPath: "id", options: {unique: true}},
+        {name: "name", keyPath: "name", options: {unique: true}},
+      ],
     },
   ])
 
@@ -45,13 +49,13 @@ function defineApi(): Storage {
     const fromDate = from ? from : DateTime.now().minus({years: 1}).toISODate()!
     const toDate = to ? to : DateTime.now().plus({years: 1}).toISODate()!
 
-    return await db.transaction("readonly", ["tasks", "days", "labels"], async ([tasksStore, daysStore, labelsStore], done) => {
+    return await db.transaction("readonly", ["tasks", "days", "tags"], async ([tasksStore, daysStore, tagsStore], done) => {
       const tasks = (await tasksStore.index("scheduled.date").getAll(IDBKeyRange.bound(fromDate, toDate))) ?? []
       const days = (await daysStore.index("date").getAll(IDBKeyRange.bound(fromDate, toDate))) ?? []
-      const labels = (await labelsStore.getAll()) ?? []
+      const tags = (await tagsStore.getAll()) ?? []
 
       done()
-      return groupTasksByDay({tasks, days, labels}) || null
+      return groupTasksByDay({tasks, days, tags}) || []
     })
   }
 
@@ -61,7 +65,7 @@ function defineApi(): Storage {
    * @returns The day that matches the query
    */
   async function getDay(date: ISODate): Promise<Day | null> {
-    return await db.transaction("readonly", ["days", "tasks", "labels"], async ([daysStore, tasksStore, labelsStore], done) => {
+    return await db.transaction("readonly", ["days", "tasks", "tags"], async ([daysStore, tasksStore, tagsStore], done) => {
       const dayId = date.replaceAll("-", "")
       const dayItem = await daysStore.get(dayId)
 
@@ -74,10 +78,10 @@ function defineApi(): Storage {
       const toDate = DateTime.fromISO(date).toISODate()!
 
       const tasks = (await tasksStore.index("scheduled.date").getAll(IDBKeyRange.bound(fromDate, toDate))) ?? []
-      const labels = (await labelsStore.getAll()) ?? []
+      const tags = (await tagsStore.getAll()) ?? []
 
       done()
-      return groupTasksByDay({tasks, days: [dayItem], labels})[0] || null
+      return groupTasksByDay({tasks, days: [dayItem], tags})[0] || null
     })
   }
 
@@ -100,7 +104,7 @@ function defineApi(): Storage {
       id: nanoid(),
       content,
       status: "active",
-      labels: [],
+      tags: [],
       createdAt: now.toISO()!,
       updatedAt: now.toISO()!,
       scheduled: {
@@ -198,6 +202,50 @@ function defineApi(): Storage {
     })
   }
 
+  async function addTaskTags(taskId: Task["id"], ids: Tag["id"][]): Promise<Task | null> {
+    return await db.transaction("readwrite", ["tasks", "tags"], async ([tasksStore, tagsStore], done) => {
+      const task: Task | null = await tasksStore.get(taskId)
+      const allTags: Tag[] | null = await tagsStore.getAll()
+
+      if (!task || !allTags) {
+        done()
+        return null
+      }
+
+      const newTags = ids.map((id) => allTags.find((tag) => tag.id === id)).filter(Boolean) as Tag[]
+      const tags = arrayRemoveDuplicates(task.tags.concat(newTags), "id")
+
+      const updatedTask = {...task, tags}
+
+      await tasksStore.put(updatedTask)
+
+      done()
+      return updatedTask
+    })
+  }
+
+  async function removeTaskTags(taskId: Task["id"], ids: Tag["id"][]): Promise<Task | null> {
+    return await db.transaction("readwrite", ["tasks", "tags"], async ([tasksStore, tagsStore], done) => {
+      const task: Task | null = await tasksStore.get(taskId)
+      const allTags: Tag[] | null = await tagsStore.getAll()
+
+      if (!task || !allTags) {
+        done()
+        return null
+      }
+
+      const newTags = task.tags.filter(({id}) => !ids.includes(id)) as Tag[]
+      const tags = arrayRemoveDuplicates(newTags, "id")
+
+      const updatedTask = {...task, tags}
+
+      await tasksStore.put(updatedTask)
+
+      done()
+      return updatedTask
+    })
+  }
+
   /**
    * Update a day in the database
    * @param date - The date formatted as YYYY-MM-DD of the day to update
@@ -223,39 +271,51 @@ function defineApi(): Storage {
     return await getDay(date)
   }
 
-  async function getLabels(): Promise<Label[]> {
-    return await db.transaction("readonly", ["labels"], async ([labelsStore], done) => {
-      const labels = await labelsStore.getAll()
+  async function getTags(): Promise<Tag[]> {
+    return await db.transaction("readonly", ["tags"], async ([tagsStore], done) => {
+      const tags = await tagsStore.getAll()
       done()
-      return labels
+      return tags
     })
   }
 
-  async function createLabel({name, color}: {name: string; color: string}): Promise<Label | null> {
-    return await db.transaction("readwrite", ["labels"], async ([labelsStore], done) => {
-      const newLabel: Label = {
+  async function createTag(name: Tag["name"], color: Tag["color"]): Promise<Tag | null> {
+    return await db.transaction("readwrite", ["tags"], async ([tagsStore], done) => {
+      const newTag: Tag = {
+        id: nanoid(),
         name,
         color,
       }
 
-      const existingLabel = await labelsStore.get(name)
-      console.log({existingLabel})
+      const existingTag = await tagsStore.index("name").get(name)
 
-      if (existingLabel) {
+      if (existingTag) {
         done()
         return null
       }
 
-      await labelsStore.put(newLabel)
+      await tagsStore.put(newTag)
       done()
 
-      return newLabel
+      return newTag
     })
   }
 
-  async function deleteLabel(name: Label["name"]): Promise<boolean> {
-    await db.transaction("readwrite", ["labels"], async ([labelsStore], done) => {
-      await labelsStore.delete(name)
+  async function deleteTag(id: Tag["id"]): Promise<boolean> {
+    await db.transaction("readwrite", ["tags", "tasks"], async ([tagsStore, tasksStore], done) => {
+      const tasks = (await tasksStore.getAll()) as Task[] | null
+
+      if (!tasks) {
+        done()
+        return
+      }
+
+      for (const task of tasks) {
+        const tags = task.tags.filter((tag) => tag.id !== id)
+        await tasksStore.put({...task, tags})
+      }
+
+      await tagsStore.delete(id)
       done()
     })
 
@@ -267,14 +327,19 @@ function defineApi(): Storage {
     updateTask,
     deleteTask,
 
+    addTaskTags,
+    removeTaskTags,
+
     getDays,
     getDay,
     updateDay,
 
-    getLabels,
-    createLabel,
-    deleteLabel,
+    getTags,
+    createTag,
+    deleteTag,
   }
 }
 
 export const API = defineApi()
+
+window.API = API

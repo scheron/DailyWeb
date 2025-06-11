@@ -27,7 +27,7 @@ const groupedActiveDays = computed(() => {
     if (!day.countActive) continue
     const dayDate = DateTime.fromISO(day.date)
 
-    const isInThisWeek = dayDate >= startOfThisWeek && dayDate < now.minus({days: 1})
+    const isInThisWeek = dayDate >= startOfThisWeek && dayDate <= now
     const isInLastWeek = dayDate >= startOfLastWeek && dayDate <= endOfLastWeek
     const isInLastMonth = dayDate >= startOfLastMonth && dayDate <= endOfLastMonth
     const isOlder = dayDate < startOfLastMonth

@@ -181,8 +181,8 @@ onBeforeMount(() => {
 
         <div
           v-if="day.dayInfo.countTotalTasks"
-          class="border-base-300 absolute right-1 bottom-1 h-2 w-2 rounded-full border"
-          :class="[day.dayInfo.countCompletedTasks === day.dayInfo.countTotalTasks ? 'bg-success' : 'bg-info']"
+          class="absolute right-0.5 top-0.5 size-2 rounded-full shadow-xs"
+          :class="[day.dayInfo.countActiveTasks === 0 ? 'bg-success' : 'bg-warning']"
         />
       </BaseButton>
     </ul>

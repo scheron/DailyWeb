@@ -47,7 +47,7 @@ export function prepareTasksForExport({fromDate, toDate, days}: {fromDate: strin
 
     const tasks = dayObj.tasks.map((task) => {
       const taskContent = task.content.trim()
-      const status = task.status === "done" ? "Done" : task.status === "canceled" ? "Canceled" : "Active"
+      const status = task.status === "done" ? "Done" : task.status === "discarded" ? "Discarded" : "Active"
 
       let baseFilename = task.scheduled.time.replace(":", "-") 
       let filename = `${baseFilename}.md`

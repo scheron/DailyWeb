@@ -1,5 +1,5 @@
 import type {ISODate, ISOTime, Timezone} from "./date"
-import type {Day, Label, Task} from "./tasks"
+import type {Day, Tag, Task} from "./tasks"
 
 export interface Storage {
   getDays(params?: {from?: ISODate; to?: ISODate}): Promise<Day[]>
@@ -9,8 +9,10 @@ export interface Storage {
   createTask(content: string, params: {date?: ISODate; time?: ISOTime; timezone?: Timezone}): Promise<Day>
   updateTask(id: Task["id"], updates: Partial<Omit<Task, "id" | "createdAt" | "updatedAt">>): Promise<Day | null>
   deleteTask(id: Task["id"]): Promise<boolean>
+  addTaskTags(taskId: Task["id"], ids: Tag["id"][]): Promise<Task | null>
+  removeTaskTags(taskId: Task["id"], ids: Tag["id"][]): Promise<Task | null>
 
-  getLabels(): Promise<Label[]>
-  createLabel({name, color}: {name: string; color: string}): Promise<Label | null>
-  deleteLabel(name: Label["name"]): Promise<boolean>
+  getTags(): Promise<Tag[]>
+  createTag(name: Tag["name"], color: Tag["color"]): Promise<Tag | null>
+  deleteTag(id: Tag["id"]): Promise<boolean>
 }

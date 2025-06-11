@@ -24,9 +24,9 @@ export const useTasksStore = defineStore("tasks", () => {
     return day ? day.tasks : []
   })
 
-  const dailyLabels = computed(() => {
+  const dailyTags = computed(() => {
     const day = days.value.find((day) => day.date === activeDay.value)
-    return day ? day.labels : []
+    return day ? day.tags : []
   })
 
   function setActiveDay(date: ISODate) {
@@ -130,7 +130,7 @@ export const useTasksStore = defineStore("tasks", () => {
     days,
     activeDay,
     dailyTasks,
-    dailyLabels,
+    dailyTags,
     activeDayInfo,
     lastDeletedTasks,
 

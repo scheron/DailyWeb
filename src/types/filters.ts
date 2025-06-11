@@ -1,1 +1,1 @@
-export type TasksFilter = "all" | "active" | "done" | "canceled"
+export type TasksFilter = "all" | "active" | "done" | "discarded"
