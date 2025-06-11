@@ -27,7 +27,7 @@ async function deleteTag(id: string) {
       <div
         v-for="tag in tags"
         :key="tag.id"
-        class="group flex items-center justify-between gap-1 flex-1 rounded-full px-3 py-1 text-sm w-full"
+        class="group flex items-center justify-between gap-1 flex-1 rounded-md px-3 py-1 text-sm w-full"
         :style="{
           backgroundColor: `${tag.color}20`,
           color: tag.color,
@@ -45,7 +45,7 @@ async function deleteTag(id: string) {
     </div>
     <div v-else class="flex flex-col items-center justify-center h-full gap-2">
       <p class="text-base-content/50 text-sm">No tags yet</p>
-      <p class="text-base-content/50 text-sm">Add a tag to get started</p>
+      <p class="text-base-content/50 text-sm">Create a tag to get started</p>
     </div>
   </div>
 </template>

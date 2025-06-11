@@ -42,11 +42,6 @@ function onEdit(task?: Task) {
   taskEditorStore.setIsTaskEditorOpen(true)
 }
 
-function onDelete(task: Task) {
-  taskEditorStore.setCurrentEditingTask(task)
-  taskEditorStore.setIsTaskDeleteConfirmOpen(true)
-}
-
 function onChangeStatus(task: Task, status: TaskStatus) {
   tasksStore.updateTask(task.id, {status})
 }
@@ -66,7 +61,6 @@ function onChangeStatus(task: Task, status: TaskStatus) {
             :task="task"
             :tags="getTaskTags(task)"
             @change-status="onChangeStatus(task, $event)"
-            @delete="onDelete(task)"
             @edit="onEdit(task)"
           />
         </BaseAnimation>

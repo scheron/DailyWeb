@@ -1,5 +1,7 @@
 import {DateTime} from "luxon"
 
+import {arrayRemoveDuplicates} from "./arrays"
+
 import type {ISODate} from "@/types/date"
 import type {Day, DayItem, Tag, Task} from "@/types/tasks"
 
@@ -50,7 +52,7 @@ export function groupTasksByDay(params: GroupTasksByDayParams): Day[] {
       countActive,
       countDone,
       tasks: sortedTasks,
-      tags,
+      tags: arrayRemoveDuplicates(tags, "id"),
     }
   })
 }
@@ -63,4 +65,32 @@ function sortScheduledTasks<T extends {scheduled: {date: ISODate; time?: string}
     const bMillis = DateTime.fromISO(`${b.scheduled.date}T${bTime}`).toMillis()
     return direction === "asc" ? aMillis - bMillis : bMillis - aMillis
   })
+}
+
+export function updateDayStats(day: Day): Day {
+  const countActive = day.tasks.filter((task) => task.status === "active").length
+  const countDone = day.tasks.filter((task) => task.status === "done").length
+
+  const usedTags = new Set(day.tasks.flatMap((t) => t.tags.map((tag) => tag.id)))
+  const updatedTags = day.tags.filter((tag) => usedTags.has(tag.id))
+
+  return {
+    ...day,
+    countActive,
+    countDone,
+    tags: arrayRemoveDuplicates(updatedTags, "id"),
+  }
+}
+
+export function updateDays(days: Day[], updatedDay: Day): Day[] {
+  const dayWithStats = updateDayStats(updatedDay)
+  const updatedDays = [...days]
+
+  const dayIndex = updatedDays.findIndex((day) => day.date === dayWithStats.date)
+
+  if (dayIndex === -1) return updatedDays.concat(dayWithStats)
+
+  updatedDays.splice(dayIndex, 1, dayWithStats)
+
+  return updatedDays
 }

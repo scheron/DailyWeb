@@ -8,12 +8,15 @@ import BaseButton from "./BaseButton.vue"
 
 type HorizontalPosition = "start" | "center" | "end"
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   title?: string
-  showClose?: boolean
+  hideCloseBtn?: boolean
   position?: HorizontalPosition
   triggerClass?: string
-}>()
+}>(), {
+  hideCloseBtn: false,
+  position: "start",
+})
 
 const emit = defineEmits<{
   close: []
@@ -74,11 +77,11 @@ defineExpose({
       :style="floatingStyles"
     >
       <div class="flex flex-col gap-1">
-        <div v-if="title || showClose" class="flex items-center justify-between pb-1 border-b border-base-300">
+        <div v-if="title || !hideCloseBtn" class="flex items-center justify-between pb-1 border-b border-base-300">
           <span v-if="title" class="text-sm pl-1 font-semibold text-base-content/70">{{ title }}</span>
 
           <BaseButton
-            v-if="showClose"
+            v-if="!hideCloseBtn"
             icon="x-mark"
             variant="ghost"
             size="sm"

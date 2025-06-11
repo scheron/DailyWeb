@@ -120,6 +120,6 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div class="text-base-content/70 mt-3 text-center text-xs">Use swipe to complete or cancel task</div>
+    <div class="text-base-content/70 mt-3 text-center text-xs">Use swipe to complete or discard task</div>
   </div>
 </template>

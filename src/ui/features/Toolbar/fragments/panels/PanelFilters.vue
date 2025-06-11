@@ -2,34 +2,33 @@
 import {computed} from "vue"
 
 import {capitalize} from "@/utils/strings"
+import {useFilterStore} from "@/stores/filter.store"
+import {useTasksStore} from "@/stores/tasks.store"
 import BaseButton from "@/ui/base/BaseButton.vue"
 import BaseIcon from "@/ui/base/BaseIcon"
 import BasePopup from "@/ui/base/BasePopup.vue"
+import BaseTag from "@/ui/base/BaseTag.vue"
 
 import type {TasksFilter} from "@/types/filters"
-import type {Tag, Task} from "@/types/tasks"
+import type {Tag} from "@/types/tasks"
 
-const props = defineProps<{
-  activeFilter: TasksFilter
-  activeTags: Tag["id"][]
-  tasks: Task[]
-  tags: Tag[]
-}>()
-
-const emit = defineEmits<{"update:active-filter": [TasksFilter]; "update:active-tags": [Tag["id"]]}>()
-
-const options: {label: string; value: TasksFilter}[] = [
+const VISIBLE_TAGS_COUNT = 3
+const FILTERS: {label: string; value: TasksFilter}[] = [
   {label: "All", value: "all"},
   {label: "Active", value: "active"},
   {label: "Done", value: "done"},
   {label: "Discarded", value: "discarded"},
 ]
 
-const visibleTags = computed(() => props.tags.slice(0, 3))
-const remainingTags = computed(() => props.tags.slice(3))
+const tasksStore = useTasksStore()
+const filterStore = useFilterStore()
+
+const visibleTags = computed(() => tasksStore.dailyTags.slice(0, VISIBLE_TAGS_COUNT))
+const remainingTags = computed(() => tasksStore.dailyTags.slice(VISIBLE_TAGS_COUNT))
+const hasSelectedInPopup = computed(() => remainingTags.value.some((tag) => filterStore.activeTagIds.has(tag.id)))
 
 const count = computed(() => {
-  return props.tasks.reduce(
+  return tasksStore.dailyTasks.reduce(
     (acc, task) => {
       if (task.status === "active") acc.active++
       else if (task.status === "done") acc.done++
@@ -41,56 +40,36 @@ const count = computed(() => {
   )
 })
 
-const hasSelectedInPopup = computed(() => remainingTags.value.some((tag) => props.activeTags.includes(tag.id)))
-
 function isActiveTag(tagId: Tag["id"]) {
-  return props.activeTags.includes(tagId)
+  return filterStore.activeTagIds.has(tagId)
 }
 
 function selectTag(tagId: Tag["id"]) {
-  emit("update:active-tags", tagId)
+  filterStore.setActiveTags(tagId)
 }
 </script>
 
 <template>
   <div class="bg-base-100 flex size-full flex-col gap-2 px-4 py-2 md:flex-row md:items-center md:justify-between">
     <div class="relative flex items-center gap-2 max-w-2/5">
-      <span v-if="!tags.length" class="text-sm text-base-content/70">
+      <span v-if="!tasksStore.dailyTags.length" class="text-sm text-base-content/70">
         <BaseIcon name="tags" class="size-4" />
         No daily tags
       </span>
 
       <template v-else>
-        <BaseButton
-          v-for="tag in visibleTags"
-          :key="tag.id"
-          variant="ghost"
-          size="sm"
-          icon-class="size-4"
-          class="focus-visible-ring shrink-0 border hover:opacity-100 rounded-full focus-visible:ring-offset-base-100 relative focus-visible:ring-base-content px-2 py-0.5"
-          :class="isActiveTag(tag.id) ? 'opacity-100' : 'opacity-80'"
-          :style="{
-            borderColor: isActiveTag(tag.id) ? tag.color : 'transparent',
-            color: isActiveTag(tag.id) ? tag.color : 'inherit',
-          }"
-          @click="selectTag(tag.id)"
-        >
-          <span class="absolute inset-0 rounded-full opacity-20 size-full" :style="{backgroundColor: tag.color}" />
-          <span class="text-xs relative">{{ tag.name }}</span>
-        </BaseButton>
-
-        <BasePopup v-if="remainingTags.length" title="Select Tags" show-close position="start" class="relative">
+        <BasePopup v-if="remainingTags.length" title="More Tags">
           <template #trigger="{toggle}">
             <BaseButton
               variant="outline"
-              class="rounded-full px-2 py-0.5 gap-1 flex-row-reverse"
-              :class="[hasSelectedInPopup ? 'bg-accent/10 text-accent border-accent px-2' : '']"
               size="sm"
+              class="px-2 rounded-md"
+              :class="[hasSelectedInPopup ? 'bg-accent/20 border-accent text-accent' : 'opacity-70 hover:opacity-90']"
               icon="tags"
-              icon-class="size-4"
+              icon-class="size-3.5"
               @click="toggle"
             >
-              <span class="text-xs"> +{{ remainingTags.length }} </span>
+              <span class="text-xs font-medium">{{ remainingTags.length }}</span>
             </BaseButton>
           </template>
 
@@ -108,20 +87,22 @@ function selectTag(tagId: Tag["id"]) {
             <BaseIcon name="check" class="size-4 ml-auto text-base-content/70 shrink-0" :class="{invisible: !isActiveTag(tag.id)}" />
           </BaseButton>
         </BasePopup>
+
+        <BaseTag v-for="tag in visibleTags" :key="tag.id" :tag="tag" :active="isActiveTag(tag.id)" @click="selectTag(tag.id)" />
       </template>
     </div>
 
     <div class="flex w-full items-center gap-2 md:w-auto">
       <div class="bg-base-300 text-base-content0 inline-flex w-full gap-2 rounded-lg p-0.5 md:w-auto">
         <button
-          v-for="option in options"
+          v-for="option in FILTERS"
           :key="option.value"
           class="focus-visible-ring focus-visible:ring-offset-base-100 focus-visible:ring-base-content flex-1 rounded-md px-2 py-0.5 text-sm transition-colors outline-none md:flex-none"
           :class="{
-            'bg-base-100 text-base-content shadow-sm': activeFilter === option.value,
-            'text-base-content/70 hover:text-base-content': activeFilter !== option.value,
+            'bg-base-100 text-base-content shadow-sm': filterStore.activeFilter === option.value,
+            'text-base-content/70 hover:text-base-content': filterStore.activeFilter !== option.value,
           }"
-          @click="emit('update:active-filter', option.value)"
+          @click="filterStore.setActiveFilter(option.value)"
         >
           {{ capitalize(option.value) }}
           <span v-if="option.value !== 'all'" class="ml-1.5 text-xs"> ({{ count[option.value as keyof typeof count] }}) </span>

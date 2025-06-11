@@ -94,7 +94,7 @@ function defineApi(): Storage {
    * @param params.timezone - The timezone of the task
    * @returns The day that matches the query
    */
-  async function createTask(content: string, params: {date?: string; time?: string; timezone?: string}): Promise<Day> {
+  async function createTask(content: string, params: {date?: string; time?: string; timezone?: string; tags?: Tag[]}): Promise<Day> {
     const now = DateTime.now()
     const scheduledDate = params.date ? params.date : now.toISODate()!
     const scheduledTime = params.time ? params.time : now.toFormat("HH:mm")
@@ -104,7 +104,7 @@ function defineApi(): Storage {
       id: nanoid(),
       content,
       status: "active",
-      tags: [],
+      tags: params.tags ?? [],
       createdAt: now.toISO()!,
       updatedAt: now.toISO()!,
       scheduled: {
