@@ -50,8 +50,8 @@ function selectTag(tagId: Tag["id"]) {
 </script>
 
 <template>
-  <div class="bg-base-100 flex size-full flex-col gap-2 px-4 py-2 md:flex-row md:items-center md:justify-between">
-    <div class="relative flex items-center gap-2 max-w-2/5">
+  <div class="bg-base-100 flex size-full flex-col gap-3 px-4 py-2 md:flex-row md:items-center md:justify-between">
+    <div class="relative flex items-center gap-2 overflow-x-auto hide-scrollbar">
       <span v-if="!tasksStore.dailyTags.length" class="text-sm text-base-content/70">
         <BaseIcon name="tags" class="size-4" />
         No daily tags
@@ -92,8 +92,8 @@ function selectTag(tagId: Tag["id"]) {
       </template>
     </div>
 
-    <div class="flex w-full items-center gap-2 md:w-auto">
-      <div class="bg-base-300 text-base-content0 inline-flex w-full gap-2 rounded-lg p-0.5 md:w-auto">
+    <div class="flex shrink-0 w-full items-center gap-3 md:w-auto">
+      <div class="bg-base-300 text-base-content inline-flex w-full gap-2 rounded-lg p-0.5 md:w-auto">
         <button
           v-for="option in FILTERS"
           :key="option.value"
@@ -105,7 +105,9 @@ function selectTag(tagId: Tag["id"]) {
           @click="filterStore.setActiveFilter(option.value)"
         >
           {{ capitalize(option.value) }}
-          <span v-if="option.value !== 'all'" class="ml-1.5 text-xs"> ({{ count[option.value as keyof typeof count] }}) </span>
+          <span v-if="option.value !== 'all'" class="ml-1.5 text-xs">
+            ({{ count[option.value as keyof typeof count] > 9 ? "9+" : count[option.value as keyof typeof count] }})
+          </span>
         </button>
       </div>
     </div>

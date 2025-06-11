@@ -98,8 +98,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-base-100 flex items-center justify-between w-full px-2">
-    <div class="flex h-full flex-1 items-center gap-2 overflow-x-auto hide-scrollbar px-2">
+  <div class="bg-base-100 flex size-full flex-col gap-3 px-4 py-2 md:flex-row md:items-center md:justify-between">
+    <div class="relative flex items-center gap-2 overflow-x-auto hide-scrollbar">
       <BasePopup v-if="remainingTags.length" title="More Tags">
         <template #trigger="{toggle}">
           <BaseButton
@@ -138,11 +138,11 @@ onMounted(() => {
       <BaseTag v-for="tag in visibleTags" :key="tag.id" :tag="tag" :active="isActiveTag(tag.id)" @click="onSelectTag(tag.id)" />
     </div>
 
-    <div class="flex items-center gap-1">
+    <div class="flex w-full shrink-0 items-center gap-3 md:w-auto">
       <div
         v-if="taskEditorStore.currentEditingTask"
         ref="deleteBlock"
-        class="bg-error/20 hover:bg-error/40 text-error flex w-fit py-1 items-center justify-center gap-2 rounded-sm px-2 transition-colors duration-200"
+        class="bg-error/20 hover:bg-error/40 text-error flex w-full md:w-fit py-1 items-center justify-center gap-2 rounded-sm px-2 transition-colors duration-200"
       >
         <BaseIcon name="x-mark" class="relative size-4 transition-transform group-hover:scale-110" />
         <span class="text-sm font-medium">Hold to delete</span>
@@ -152,14 +152,14 @@ onMounted(() => {
         size="sm"
         icon-class="size-4"
         icon="undo"
-        class="text-base-content bg-base-content/10 hover:bg-base-content/20 rounded-sm px-2 py-0.5"
+        class="text-base-content bg-base-content/10 hover:bg-base-content/20 rounded-sm px-2 py-0.5 w-full md:w-auto"
         @click="onClose"
       >
         <span class="text-sm">Cancel {{ isNewTask ? "Create" : "Update" }}</span>
       </BaseButton>
 
       <BaseButton
-        class="bg-success/20 hover:bg-success/30 rounded-sm text-success py-0.5 px-5"
+        class="bg-success/20 hover:bg-success/30 rounded-sm text-success py-0.5 px-5 w-full md:w-auto"
         size="sm"
         icon="check"
         icon-class="size-4"

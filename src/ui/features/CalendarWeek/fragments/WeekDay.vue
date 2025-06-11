@@ -39,10 +39,10 @@ function selectDate() {
       :class="[today ? 'h-full opacity-100' : 'h-0 opacity-0']"
     />
 
-    <div v-if="day && day?.tasks.length" class="absolute right-0 top-0 z-10 flex -translate-y-1/2 flex-col items-end">
+    <div v-if="day && day?.tasks.length" class="absolute right-1 bottom-1 z-10 flex flex-col items-end">
       <div
-        class="bg-accent/20 text-accent rounded-md text-[10px] font-semibold flex items-center gap-1"
-        :class="[day.countActive === 0 ? 'bg-success' : 'bg-warning']"
+        class="rounded-md text-[10px] relative border font-semibold flex items-center gap-1"
+        :class="[day.countActive === 0 ? 'border-success text-success' : 'border-warning text-warning']"
       >
         <BaseIcon v-if="day.countActive === 0" name="check" class="size-4 p-0.5" />
         <span v-else class="px-1.5 py-0.5">{{ day.countActive > 9 ? "9+" : day.countActive }}</span>

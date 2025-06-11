@@ -59,15 +59,6 @@ async function handleExport() {
     return
   }
 
-  // const result = await window.electronAPI.exportData(exportData)
-
-  // if (result) {
-  // const totalTasks = exportData.reduce((sum, day) => sum + day.tasks.length, 0)
-  // toast.success(`${totalTasks} tasks exported successfully across ${exportData.length} days`)
-  // } else {
-  // toast.error("Failed to export tasks")
-  // }
-
   onClose()
 }
 </script>
@@ -75,7 +66,7 @@ async function handleExport() {
 <template>
   <BaseModal
     :open="uiStore.isExportTaskOpen"
-    container-class="h-full m-8 w-full h-[680px] w-[500px]"
+    container-class="h-full max-h-[90%] m-8 w-full h-[680px] w-[500px]"
     content-class="!p-0 flex flex-col"
     @close="onClose"
   >
@@ -86,7 +77,7 @@ async function handleExport() {
       </div>
     </template>
 
-    <div class="flex-1 overflow-y-auto p-4">
+    <div class="flex-1 p-4">
       <div class="flex h-full flex-col gap-4">
         <BaseCalendar mode="range" :days="tasksStore.days" :selected-range="selectedRange" size="lg" @update-range="updateRange" />
 

@@ -8,8 +8,8 @@ import BasePanel from "@/ui/base/BasePanel"
 import BaseSpinner from "@/ui/base/BaseSpinner.vue"
 import CalendarMonth from "@/ui/features/CalendarMonth"
 import HelpPanel from "@/ui/features/HelpPanel"
-import TagsPanel from "@/ui/features/TagsPanel"
 import RecentActiveTasks from "@/ui/features/RecentActiveTasks"
+import TagsPanel from "@/ui/features/TagsPanel"
 import Themes from "@/ui/features/Themes"
 import Logo from "@/ui/misc/Logo.vue"
 
@@ -20,26 +20,19 @@ defineProps<{
 
 const uiStore = useUIStore()
 const tasksStore = useTasksStore()
-const {isDesktop} = useDevice()
 </script>
 
 <template>
-  <aside :class="['border-base-300 bg-base-100 hidden shrink-0 border-r md:block', uiStore.isSidebarCollapsed ? 'w-sidebar-collapsed' : 'w-sidebar']">
+  <aside class="border-base-300 bg-base-100 border-r w-sidebar">
     <div class="border-base-300 h-header flex items-center justify-between border-b pr-4 pl-4 select-none" style="-webkit-app-region: drag">
-      <template v-if="uiStore.isSidebarCollapsed">
-        <Logo class="text-accent mx-auto h-5" />
-      </template>
+      <div class="text-accent flex flex-1 items-center gap-2">
+        <Logo class="h-5" />
+        <h2 class="font-mono text-xl font-bold">Daily</h2>
+      </div>
 
-      <template v-else>
-        <div class="text-accent flex flex-1 items-center gap-2">
-          <Logo class="h-5" />
-          <h2 class="font-mono text-xl font-bold">Daily</h2>
-        </div>
-
-        <div class="relative ml-auto text-sm flex items-center gap-1" style="-webkit-app-region: no-drag">
-          {{ tasksStore.activeDay ? toFullDate(tasksStore.activeDay, {short: true}) : "" }}
-        </div>
-      </template>
+      <div class="relative ml-auto text-sm flex items-center gap-1" style="-webkit-app-region: no-drag">
+        {{ tasksStore.activeDay ? toFullDate(tasksStore.activeDay, {short: true}) : "" }}
+      </div>
     </div>
 
     <div :style="{height: contentHeight + 'px'}" class="hide-scrollbar overflow-y-auto">
@@ -65,13 +58,9 @@ const {isDesktop} = useDevice()
             </BasePanel>
           </div>
 
-          <div
-            v-if="!uiStore.isInfoPanelOpen"
-            class="flex items-center gap-2"
-            :class="[uiStore.isSidebarCollapsed ? 'mx-auto flex-col' : 'mx-2 justify-between']"
-          >
+          <div class="mx-4 justify-between flex items-center gap-2">
             <BaseButton variant="ghost" icon="export" @click="uiStore.toggleIsExportTaskOpen()" />
-            <BaseButton v-if="isDesktop" variant="ghost" icon="sidebar" @click="uiStore.toggleSidebarCollapse()" />
+            <BaseButton variant="ghost" icon="sidebar" @click="uiStore.toggleSidebarCollapse()" />
           </div>
         </div>
       </template>

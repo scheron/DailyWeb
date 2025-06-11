@@ -24,8 +24,8 @@ export function useDevice() {
 
   return {
     isMobile: breakpoint.smaller("sm"),
-    isTablet: breakpoint.smaller("md"),
-    isDesktop: breakpoint.greaterOrEqual("md"),
+    isTablet: breakpoint.between("sm", "lg"),
+    isDesktop: breakpoint.greaterOrEqual("lg"),
 
     isIOS: getDeviceType("ios"),
     isMacOS: getDeviceType("macOS"),

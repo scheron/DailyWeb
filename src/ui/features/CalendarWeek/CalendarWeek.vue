@@ -4,14 +4,12 @@ import {DateTime} from "luxon"
 
 import {getWeekStartDate, isToday} from "@/utils/date"
 import {useTasksStore} from "@/stores/tasks.store"
-import {useUIStore} from "@/stores/ui.store"
 import WeekDay from "./fragments/WeekDay.vue"
 
 import type {ISODate} from "@/types/date"
 import type {Day} from "@/types/tasks"
 
 const tasksStore = useTasksStore()
-const uiStore = useUIStore()
 
 const viewDate = ref(getWeekStartDate(tasksStore.activeDay))
 
@@ -43,11 +41,6 @@ function formatDaysToWeek(days: Day[], currentDate: ISODate) {
 function isActive(date: ISODate) {
   return Boolean(tasksStore.activeDay && date === tasksStore.activeDay)
 }
-
-function selectDay(date: ISODate) {
-  tasksStore.setActiveDay(date)
-  uiStore.setIsCalendarOpen(false)
-}
 </script>
 
 <template>
@@ -59,6 +52,6 @@ function selectDay(date: ISODate) {
     :current-month="weekDay.isCurrentMonth"
     :selected="isActive(weekDay.date)"
     :today="isToday(weekDay.date)"
-    @select-date="selectDay(weekDay.date)"
+    @select-date="tasksStore.setActiveDay(weekDay.date)"
   />
 </template>

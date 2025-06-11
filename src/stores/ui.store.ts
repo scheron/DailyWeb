@@ -1,25 +1,23 @@
-import {STORAGE_KEY_SIDEBAR} from "@/constants/persist"
-
 import {ref} from "vue"
 import {useLocalStorage} from "@vueuse/core"
 import {defineStore} from "pinia"
 
+import {STORAGE_KEY_SIDEBAR} from "@/constants/persist"
+import {useDevice} from "@/composables/useDevice"
+
 export const useUIStore = defineStore("ui", () => {
-  const isCalendarOpen = ref(false)
-  const isInfoPanelOpen = ref(false)
-  const isExportTaskOpen = ref(false)
   const isSidebarCollapsed = useLocalStorage(STORAGE_KEY_SIDEBAR, false)
+  const {isDesktop} = useDevice()
 
-  function setIsCalendarOpen(isOpen: boolean) {
-    isCalendarOpen.value = isOpen
-  }
+  const isExportTaskOpen = ref(false)
+  const isMobileSidebarOpen = ref(false)
 
-  function toggleIsInfoPanelOpen(isOpen?: boolean) {
-    isInfoPanelOpen.value = isOpen ?? !isInfoPanelOpen.value
-  }
-
-  function toggleSidebarCollapse() {
-    isSidebarCollapsed.value = !isSidebarCollapsed.value
+  function toggleSidebarCollapse(isOpen?: boolean) {
+    if (isDesktop.value) {
+      isSidebarCollapsed.value = !isSidebarCollapsed.value
+    } else {
+      isMobileSidebarOpen.value = isOpen ?? !isMobileSidebarOpen.value
+    }
   }
 
   function toggleIsExportTaskOpen(isOpen?: boolean) {
@@ -27,13 +25,11 @@ export const useUIStore = defineStore("ui", () => {
   }
 
   return {
-    isCalendarOpen,
-    isInfoPanelOpen,
     isExportTaskOpen,
     isSidebarCollapsed,
-    setIsCalendarOpen,
-    toggleIsInfoPanelOpen,
-    toggleIsExportTaskOpen,
+    isMobileSidebarOpen,
+
     toggleSidebarCollapse,
+    toggleIsExportTaskOpen,
   }
 })

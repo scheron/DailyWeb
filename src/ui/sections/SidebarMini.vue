@@ -12,11 +12,11 @@ defineProps<{
 }>()
 
 const uiStore = useUIStore()
-const {isDesktop} = useDevice()
+
 </script>
 
 <template>
-  <aside :class="['border-base-300 bg-base-100 hidden shrink-0 border-r md:block', uiStore.isSidebarCollapsed ? 'w-sidebar-collapsed' : 'w-sidebar']">
+  <aside class="border-base-300 bg-base-100 border-r w-sidebar-collapsed">
     <div class="border-base-300 h-header flex items-center justify-between border-b pr-4 pl-4 select-none" style="-webkit-app-region: drag">
       <Logo class="text-accent mx-auto h-5" />
     </div>
@@ -25,14 +25,14 @@ const {isDesktop} = useDevice()
       <BaseSpinner v-if="!dataLoaded" />
 
       <template v-else>
-        <div class="text-base-content flex size-full flex-col pb-2">
+        <div class="text-base-content flex size-full flex-col pb-4">
           <div class="flex-1 py-4 px-1 overflow-y-auto hide-scrollbar">
             <CalendarWeek />
           </div>
 
           <div class="flex items-center gap-2 mx-auto flex-col">
             <BaseButton variant="ghost" icon="export" @click="uiStore.toggleIsExportTaskOpen()" />
-            <BaseButton v-if="isDesktop" variant="ghost" icon="sidebar" @click="uiStore.toggleSidebarCollapse()" />
+            <BaseButton variant="ghost" icon="sidebar" @click="uiStore.toggleSidebarCollapse()" />
           </div>
         </div>
       </template>
