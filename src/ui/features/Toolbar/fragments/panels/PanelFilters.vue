@@ -63,7 +63,7 @@ function selectTag(tagId: Tag["id"]) {
             <BaseButton
               variant="outline"
               size="sm"
-              class="px-2 rounded-md"
+              class="px-2 shrink-0 rounded-md"
               :class="[hasSelectedInPopup ? 'bg-accent/20 border-accent text-accent' : 'opacity-70 hover:opacity-90']"
               icon="tags"
               icon-class="size-3.5"

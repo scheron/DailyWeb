@@ -2,6 +2,7 @@
 import {computed, onMounted, ref, useTemplateRef} from "vue"
 import {toast} from "vue-sonner"
 
+import {oklchToHex} from "@/utils/colors"
 import {useProgressFill} from "@/composables/useProgressFill"
 import {useTagsStore} from "@/stores/tags.store"
 import {useTaskEditorStore} from "@/stores/taskEditor.store"
@@ -45,7 +46,7 @@ function onSelectTag(tagId: Tag["id"]) {
 const deleteBlockRef = useTemplateRef<HTMLDivElement>("deleteBlock")
 
 useProgressFill(deleteBlockRef, {
-  color: computed(() => themeStore.currentTheme.colorScheme.error),
+  color: computed(() => `${oklchToHex(themeStore.currentTheme.colorScheme.error)}60`),
   duration: 500,
   onComplete: onDelete,
 })
