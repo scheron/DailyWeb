@@ -5,14 +5,17 @@ import {useTagsStore} from "@/stores/tags.store"
 import {useTasksStore} from "@/stores/tasks.store"
 import BaseButton from "@/ui/base/BaseButton.vue"
 import TagsForm from "./fragments/TagsForm.vue"
+import { useFilterStore } from "@/stores/filter.store"
 
 const tasksStore = useTasksStore()
 const tagsStore = useTagsStore()
+const filterStore = useFilterStore()
 const isCreating = ref(false)
 
 const tags = computed(() => tagsStore.tags)
 
 async function deleteTag(id: string) {
+  filterStore.removeActiveTag(id)
   await tagsStore.deleteTag(id)
   await tasksStore.revalidateTasks()
 }

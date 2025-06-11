@@ -17,10 +17,15 @@ export const useFilterStore = defineStore("filter", () => {
     else activeTagIds.value.add(tagId)
   }
 
+  function removeActiveTag(tagId: Tag["id"]) {
+    activeTagIds.value.delete(tagId)
+  }
+
   return {
     activeFilter,
     activeTagIds,
 
+    removeActiveTag,
     setActiveFilter,
     setActiveTags,
   }

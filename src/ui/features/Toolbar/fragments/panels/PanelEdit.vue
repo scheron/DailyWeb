@@ -98,7 +98,7 @@ onMounted(() => {
 
 <template>
   <div class="bg-base-100 flex items-center justify-between w-full px-2">
-    <div class="flex h-full flex-1 items-center gap-2 overflow-x-auto px-2">
+    <div class="flex h-full flex-1 items-center gap-2 overflow-x-auto hide-scrollbar px-2">
       <BasePopup v-if="remainingTags.length" title="More Tags">
         <template #trigger="{toggle}">
           <BaseButton
