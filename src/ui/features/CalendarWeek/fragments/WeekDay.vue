@@ -41,7 +41,7 @@ function selectDate() {
 
     <div v-if="day && day?.tasks.length" class="absolute right-0 top-0 z-10 flex -translate-y-1/2 flex-col items-end">
       <div
-        class="bg-accent text-accent-content rounded-md text-[10px] font-semibold flex items-center gap-1"
+        class="bg-accent/20 text-accent rounded-md text-[10px] font-semibold flex items-center gap-1"
         :class="[day.countActive === 0 ? 'bg-success' : 'bg-warning']"
       >
         <BaseIcon v-if="day.countActive === 0" name="check" class="size-4 p-0.5" />

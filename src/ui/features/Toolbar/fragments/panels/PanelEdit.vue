@@ -151,14 +151,14 @@ onMounted(() => {
         size="sm"
         icon-class="size-4"
         icon="undo"
-        class="text-base-content bg-base-content/10 hover:bg-base-content/30 rounded-sm px-2 py-0.5"
+        class="text-base-content bg-base-content/10 hover:bg-base-content/20 rounded-sm px-2 py-0.5"
         @click="onClose"
       >
         <span class="text-sm">Cancel {{ isNewTask ? "Create" : "Update" }}</span>
       </BaseButton>
 
       <BaseButton
-        class="bg-success/10 hover:bg-success/30 rounded-sm text-success py-0.5 px-5"
+        class="bg-success/20 hover:bg-success/30 rounded-sm text-success py-0.5 px-5"
         size="sm"
         icon="check"
         icon-class="size-4"

@@ -24,7 +24,7 @@ function onCreateTask() {
 
 <template>
   <div class="flex size-full flex-1 flex-col items-center justify-center p-8 text-center">
-    <div class="bg-accent-content mb-6 rounded-full p-4">
+    <div class="bg-accent/20 mb-6 rounded-full p-4">
       <BaseIcon name="empty" class="text-accent size-12" />
     </div>
 

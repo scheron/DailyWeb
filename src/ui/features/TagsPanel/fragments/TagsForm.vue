@@ -51,9 +51,8 @@ onMounted(() => inputRef.value?.focus())
         <BaseButton
           type="button"
           icon="plus"
-          :style="{backgroundColor: newTagColor}"
           size="sm"
-          class="py-0.5 px-4"
+          class="py-0.5 px-4 bg-accent/20 hover:bg-accent/30"
           :disabled="!newTagName.trim()"
           @click="createTag"
         />
@@ -81,7 +80,7 @@ onMounted(() => inputRef.value?.focus())
           size="sm"
           class="size-5 rounded-full"
           type="button"
-          :class="newTagColor === color ? 'scale-110' : ''"
+          :class="newTagColor === color ? 'scale-110 opacity-100' : 'opacity-60'"
           :style="{backgroundColor: color}"
           @click="onColorSelect(color)"
         />

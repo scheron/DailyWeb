@@ -119,9 +119,9 @@ function getDateClasses(day: ReturnType<typeof formatDaysToMonth>[0]) {
 
   if (props.mode === "single") {
     if (isToday(day.isoDate)) classes.push("border-accent border-1")
-    if (isDateSelected(day.isoDate)) classes.push("bg-accent/85 text-accent-content hover:bg-accent")
+    if (isDateSelected(day.isoDate)) classes.push("bg-accent/30 text-accent hover:bg-accent/40")
   } else {
-    if (isDateSelected(day.isoDate)) classes.push("bg-accent/70 text-accent-content hover:bg-accent")
+    if (isDateSelected(day.isoDate)) classes.push("bg-accent/30 text-accent hover:bg-accent/40")
     else if (isDateInRange(day.isoDate)) classes.push("bg-accent/20 hover:bg-accent/30")
   }
 

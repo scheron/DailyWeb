@@ -22,7 +22,7 @@ const slots = defineSlots<{
 
 const variantClasses = {
   primary:
-    "bg-accent text-accent-content hover:bg-accent/90 disabled:hover:bg-accent focus-visible-ring focus-visible:ring-offset-base-100 focus-visible:ring-accent",
+    "bg-accent/20 text-accent hover:bg-accent/30 disabled:hover:bg-accent/20 focus-visible-ring focus-visible:ring-offset-base-100 focus-visible:ring-accent",
   ghost:
     "bg-transparent hover:bg-base-200 disabled:hover:bg-transparent text-base-content focus-visible-ring focus-visible:ring-offset-base-100 focus-visible:ring-base-content",
   text: "bg-transparent text-base-content focus-visible-ring focus-visible:ring-offset-base-100 focus-visible:ring-base-content",
