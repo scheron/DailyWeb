@@ -86,7 +86,7 @@ onMounted(() => inputRef.value?.focus())
           @click="onColorSelect(color)"
         />
 
-        <BasePopup triggerClass="ml-auto flex items-center justify-center" position="center">
+        <BasePopup triggerClass="ml-auto flex items-center justify-center" title="Pick color" position="center">
           <template #trigger="{toggle}">
             <BaseButton
               class="size-5 rounded-full overflow-hidden p-0 border-none relative"

@@ -117,6 +117,11 @@ export const useTasksStore = defineStore("tasks", () => {
     return true
   }
 
+  async function revalidateTasks() {
+    const dailyTasks = await API.getDays()
+    days.value = dailyTasks
+  }
+
   function findTaskById(taskId: string): Task | null {
     return dailyTasks.value.find((t) => t.id === taskId) || null
   }
@@ -137,5 +142,6 @@ export const useTasksStore = defineStore("tasks", () => {
     deleteTask,
     updateDayTitle,
     restoreTask,
+    revalidateTasks,
   }
 })
